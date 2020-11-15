@@ -1,0 +1,83 @@
+---
+layout: post
+title:  "Determining address ranges for a service from a single IP"
+date:   2019-03-08 00:52:05 -0700
+categories: [net]
+tags: Net Firewall
+excerpt: This post explains how to come up with a list of all IP ranges used by the company or service for the purposes of configuring your firewall and webfilter exceptions.
+---
+
+* TOC
+{:toc}
+
+## Preface
+
+Some of us who use web filter at home, such as Sophos XG to filter content, including HTTPS for the purposes of removing ads, malvare and generally unsafe and suspicious content may encounter an issues with some services that refuse to work if they detect MITM situation. 
+Or you may be connecting to your home network from a finite number of places, so you would want to allow connections only from those networks.
+
+Since there is only finite number of such services and locations it is feasible to just whitelist them on a case by case bases. 
+
+The guide below explains how to come up with a compact list of IP ranges for a specific organization from a single IP address. The command lines below will work on BSD and macOS; feel free to adjust accordingly for your system.
+
+## Guide
+
+As an example, consider Netflix. It really does not like my firewall snooping on its traffics, so I had to whitelist it. I'm sure the process can be completely automated, including feeding the resulting network definitions into XG firewall, but for a handful of services it is probably not worth the effort. 
+
+
+### Start with a single IP
+
+Find a single IP belonging to the IP range in question. For example, disabling webfilter, turning on logging, and try to use the affected resource. Pick one of the IPs from the log. Lets assume it was `192.173.64.0`.
+
+### Determine the origin 
+
+Plug the ip address into service like [ipinfo.io](https://ipinfo.io) or [radb.net](https://www.radb.net) to get the origin: 
+
+```bash
+mbp:~ me$ curl ipinfo.io/192.173.64.0/org
+AS2906 Netflix Streaming Services Inc.
+
+mbp:~ me$ whois -h whois.radb.net -- '-l  192.173.64.0' |grep origin:
+origin:     AS2906
+```
+
+### Query all routes
+Query the same database for all routes: lets limit to IPv4 for now. To include ipv6 -- grep by `^route6:`: 
+
+```bash
+mbp:~ me$ whois -h whois.radb.net -- '-i origin AS2906' |grep '^route:' |sed -e 's/route:[[:space:]]*\(\S*\)/\1/'
+69.53.224.0/19
+208.75.76.0/22
+37.77.184.0/21
+
+... [deleted 38 entries] ... 
+
+23.246.15.0/24
+108.175.47.0/24
+23.246.29.0/24
+23.246.28.0/24
+```
+
+### Optimize and compact the network ranges
+
+There are a bunch of calculators in existence, both online and command line; I stumbled upon this one [TechZoom's IP Address Calculator](https://www.techzoom.net/Tools/IPAddressCalculator) and keep using it successfully ever since.
+
+Copy the output from the previous step and paste it into the calculator. You will get the following concatenated and optimized list, presented here in its entirety: 
+
+```bash
+23.246.0.0-23.246.63.255
+37.77.184.0-37.77.191.255
+45.57.0.0-45.57.127.255
+64.120.128.0-64.120.255.255
+66.197.128.0-66.197.255.255
+69.53.224.0-69.53.255.255
+108.175.32.0-108.175.47.255
+185.2.220.0-185.2.223.255
+185.9.188.0-185.9.191.255
+192.173.64.0-192.173.127.255
+198.38.96.0-198.38.127.255
+198.45.48.0-198.45.63.255
+208.75.76.0-208.75.79.255
+
+```
+
+This is much more manageable list suitable for even manual entry into a firewall lists.

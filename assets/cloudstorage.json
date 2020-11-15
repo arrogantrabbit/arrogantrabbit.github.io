@@ -1,0 +1,25 @@
+{
+	"data": [
+		["<a href=https://passport.yandex.ru/profile/services>Yandex Disk</a>", "1 TB", "WebDAV, REST API", "", "1", "", "$3.04", "$3.04", ""],
+		["<a href=https://wasabi.com/pricing/pricing-faqs>Wasabi UE</a>", "Unlimited", "S3", "90 day miminum", "", "$5.99", "$5.99", "", ""],
+		["<a href=https://www.amazon.com/clouddrive/managestoragev2/allPlans?mgh=1>Amazon Drive</a>", "Per TB", "Proprietary, closed to new developers", "", "30", "$5.00", "$5.00", "", ""],
+		["<a href=https://www.backblaze.com/b2/cloud-storage-pricing.html>Backblaze B2</a>", "10 GB+", "B2", "Not yet supported by HyperBackup", "", "$5.00", "", "", "$0.01"],
+		["<a href=https://hubic.com/en/>HubiC (France)</a>", "10 TB", "Closed for new users", "", "10", "", "", "$5.00", ""],
+		["<a href=https://c2.synology.com/en-us/backup#tab_plan>Synology C2 1TB</a>", "1 TB*", "Proprietary, Synology only", "Data versions do not count against that 1TB ", "1", "", "", "$5.69", ""],
+		["<a href=https://products.office.com/en-us/compare-all-microsoft-office-products?&activetab=1>OneDrive Office 365 Personal</a>", "1 TB", "Proprietary", "", "1", "", "", "$5.83", ""],
+		["<a href=https://c2.synology.com/en-us/backup#tab_plan>Synology C2</a>", "Unlimited", "Proprietary", "", "", "$6.63", "", "", ""],
+		["<a href=https://www.dropbox.com/buy>Dropbox Plus</a>", "1 TB", "Proprietary", "", "1", "", "", "$8.25", ""],
+		["<a href=https://www.idrive.com/pricing>iDrive 5TB</a>", "5 TB", "Proprietary", "", "5", "", "", "$8.29", ""],
+		["<a href=https://products.office.com/en-us/compare-all-microsoft-office-products?&activetab=1>OneDrive Office 365 Home</a>", "6 x 1 TB", "Proprietary", "Split into 6 accounts", "6", "", "", "$8.33", ""],
+		["<a href=https://cloud.yandex.com/docs/storage/pricing>Yandex Cloud COLD</a>", "Per GB", "S3", "", "5", "$8.49", "", "", "$0.02"],
+		["<a href=https://one.google.com/about>Google Drive</a>", "2 TB", "Proprietary", "With annual billing", "2", "", "", "$8.33", ""],
+		["<a href=https://azure.microsoft.com/en-us/pricing/>Microsoft Azure</a>", "LRS, Cool", "Azure", "30 day minimum", "", "$10.00", "", "", "$0.01"],
+		["<a href=https://aws.amazon.com/s3/pricing/>Amazon S3</a>", "STD-IAF", "S3", "", "", "$12.50", "", "", "$0.09 after 1GB/m free"],
+		["<a href=https://cloud.yandex.com/docs/storage/pricing>Yandex Cloud Standard</a>", "Per GB", "S3", "", "5", "$15.95", "", "", "$0.02"],
+		["<a href=https://www.dropbox.com/buy>DropBox Pro</a>", "2 TB", "Proprietary", "", "2", "", "", "$16.58", ""],
+		["<a href=https://www.dropbox.com/buy>Dropbox Advanced Teams</a>", "Unlimited", "Proprietary", "Min 3 accounts", "10000", "", "", "$20.00", ""],
+		["<a href=https://aws.amazon.com/s3/pricing/>Amazon S3</a>", "STD", "", "", "", "$23.00", "", "", "$0.09 after 1GB/m free"],
+		["<a href=https://one.google.com/about>Google Drive</a>", "10 TB", "Proprietary", "", "10", "", "", "$99.99", ""],
+		["<a href=https://www.backblaze.com/b2/cloud-storage-pricing.html>Backblaze B2</a>", "10 GB", "B2", "", "0.01", "", "", "", ""]
+	]
+}

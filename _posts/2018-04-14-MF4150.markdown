@@ -1,0 +1,297 @@
+---
+layout: post
+title:  "Canon MF4150: Printing and Scanning with AirPrint and SANE"
+date:   2018-04-14 00:34:05 -0700
+categories: [Printing]
+tags: Printing Linux SANE AirPrint CentOS VM
+---
+
+I have a fairly old but great laser multifunction [Canon MF4150](https://www.usa.canon.com/internet/portal/us/home/support/details/printers/support-laser-printers-imageclass/imageclass-mf4150) that never really supported scanning from anything but windows and whose MacOS printing drivers lag behind OS releases by a large margin causing frustration after each new release. Still, it has been over 10 years and it works great and I'm absolutely happy with its performance. 
+
+This post is a walk-through of configuring instance of CentOS to make the device network accessible with the following features:
+
+- Network printing 
+- AirPrint support 
+- Network scanning
+- MacOS, iOS and Windows clients 
+
+There are a bunch of tutorials online on achieving similar goals but I had to tweak them to make it work &mdash; I was stumbling on issues all the time. 
+
+## What to follow
+* TOC
+{:toc}
+
+## Choice of HW and OS
+The HW choice was rather trivial &mdash; I have Synology DSM running in the printer's vicinity with tons of RAM and 4 core CPU that is idle most of the time. So running something in the VM there wasn't unreasonable. 
+
+The OS on the other hand is a bit trickier. I have attempted to use Alpine Linux as starting point but I could not make Canon UFR LT II drivers work there. So I went backwards and picked OS that is lightweight and also is compatible with the printer drivers. CentOS seemed fitting to I went with it.
+
+Assumptions: 
+```
+VM instance hostname: printers
+VM instance address:  10.0.17.242
+Subnet:               10.0.17.0/24
+```
+
+
+## Configuring CentOS instance
+
+Download [Minimal ISO](https://www.centos.org/download). Mount in the VM and install with default settings:
+- Configure Hostname to something meaningful. I called it `Printers`
+- Select `default` security profile
+- Create user `admin`
+
+Setup SSH, login, set timezone, and update the software. It also makes sense to install guest agents to ensure consistency of the snapshots later: 
+
+``` bash
+timedatectl set-timezone America/Los_Angeles
+yum -y upgrade
+yum -y install qemu-guest-agent
+```
+
+You can get the list of timezones by running `timedatectl list-timezones`.
+
+We will configure firewall properly later to allow Avahi, CUPS and SANE to expose services, but at this point since this is a machine in a trusted LAN we just [disable firewall and revert to simple ipsec config with persistence](https://askubuntu.com/questions/66890/how-can-i-make-a-specific-set-of-iptables-rules-permanent):
+``` bash
+systemctl stop firewalld
+systemctl disable firewalld
+yum install -y iptables-services
+systemctl enable iptables
+iptables -I INPUT -j ACCEPT
+service iptables save
+```
+
+## Printing
+We will be printing via CUPS and use [Avahi](http://www.avahi.org) for [AirPrint](https://support.apple.com/en-us/HT201311). 
+So, install:
+
+``` bash
+yum install -y cups ghostscript avahi python-cups python-lxml
+```
+Python bits are dependencies for [airprint-generate](https://github.com/jpawlowski/airprint-generate) scripts. `cups` is self-explanatory and `ghostscript` is a dependency for [Canon printer drivers](http://ug.oipsrv.net/USRMA-0586-zz-DR-enUS/contents/dlu-inst.html).
+
+### Configuring CUPS
+
+Edit `/etc/cups/cups-files.conf` and add `admin` to `SystemGroup`:
+
+``` config
+# Administrator user group, used to match @SYSTEM in cupsd.conf policy rules...
+SystemGroup sys root admin
+```
+
+Edit `/etc/cups/cupsd.conf` to add `Listen` interface other than localhost and allow connections from your LAN under `<Location />` and `<Location /admin>`. 
+For example:
+
+``` config
+# Listen on LAN interface
+Listen 10.0.17.242:631
+
+# Or, alternatively, Listen on all interfaces:
+Port 631
+
+# Restrict access to the server...
+<Location />
+  Allow 10.0.17.0/24
+  Allow localhost
+  Allow 127.0.0.1
+  Require valid-user
+  Satisfy any
+  Order deny,allow
+  Deny from all
+</Location>
+
+# Restrict access to the admin pages...
+<Location /admin>
+  Allow 10.0.17.0/24
+  Allow localhost
+  Allow 127.0.0.1
+  Require user @SYSTEM
+  Order deny,allow
+  Deny from all
+</Location>
+```
+
+Scroll down to policies and review permissions for users to manage printers and jobs if needed. For more information see `man cupsd.conf`. The defaults are appropriate in most cases.
+
+After changing configuration restart CUPS via `systemctl restart cups`.
+
+### Installing Canon UFR II Drivers
+From [Canon MF4150 Driver Page](https://www.usa.canon.com/internet/portal/us/home/support/details/printers/support-laser-printers-imageclass/imageclass-mf4150?tab=drivers_downloads) download `Linux 64` drivers and unpack them.
+
+There are two ways to install: if you feel brave, use their install script:
+
+``` bash
+cd linux-UFRII-drv-v350-usen
+sudo ./install.sh
+```
+It worked fine on CentOS but I had issues with it on other OSes before. Alternatively, 
+``` bash
+cd linux-UFRII-drv-v350-usen/64-bit_Driver/RPM/
+yum -y --nogpgcheck localinstall cndrvcups-common-3.90-1.x86_64.rpm
+yum -y --nogpgcheck localinstall cndrvcups-ufr2-us-3.50-1.x86_64.rpm
+```
+This will install the rpms and take care of dependencies.
+
+### Configuring and sharing printer in CUPS
+Now connect the printer to the machine, go to `printers:631` and add that printer in CUPS.
+
+### Configuring AirPrint services with avahi
+To generate Avahi .service manifests we'll take advantage of [airprint-generate](https://github.com/jpawlowski/airprint-generate) script by jpawlowski:
+
+``` bash
+yum -y install wget pygobject2 python-cups python-lxml 
+wget -O /usr/share/cups/mime/apple.convs --no-check-certificate https://raw.github.com/jpawlowski/airprint-generate/master/apple.convs
+wget -O /usr/local/bin/airprint-generate.py --no-check-certificate https://raw.github.com/jpawlowski/airprint-generate/master/airprint-generate.py
+wget -O /usr/local/bin/avahisearch.py --no-check-certificate https://raw.github.com/jpawlowski/airprint-generate/master/avahisearch.py
+chmod 755 /usr/local/bin/airprint-generate.py /usr/local/bin/avahisearch.py
+
+# Remove ugly Sec.Airprint prefix from the broadcast
+sed -ibak 's/Sec\.AirPrint //' /usr/local/bin/airprint-generate.py
+
+rm -rf /etc/avahi/services && /usr/local/bin/airprint-generate.py --cups -d /etc/avahi/services
+systemctl restart avahi-daemon
+systemctl restart cups
+```
+The last three lines should be re-run every time you add/remove printers and/or change configuration in any significant way.
+
+### That's it
+Now the printer should show up in the Print menu on iOS devices. If this is not the case &mdash; verify that iptables allow all, that locations in CUPS are setup to allow your LAN and that the users privileges are appropriately assigned.
+
+
+## Scanning with SANE
+For scanning we will use an awesome [SANE](http://www.sane-project.org) which worked great even on Alpine linux. We'll need to build it from latest source though &mdash; the included distribution in CentOS had some weird issues when the scanner would be detectable but not usable. 
+
+### Building and Installing sane-backends
+
+``` bash
+yum -y install git gcc gcc-c++ make libusb-devel avahi-devel libpng-devel systemd-devel
+cd
+git clone https://alioth.debian.org/anonscm/git/sane/sane-backends.git
+cd sane-backends
+./configure && make && make install
+```
+
+Test:
+``` bash
+root@printers ~]# scanimage -L
+device 'pixma:04A926A3_SDF680284650B' is a CANON Canon imageCLASS MF4150 multi-function peripheral
+```
+
+and the real test:
+``` bash
+[root@printers ~]# scanimage -vvvv --source Flatbed --resolution=300dpi --mode Color  --format png  > /tmp/test.png
+scanimage: value for --resolution is: 300
+scanimage: scanning image of size 2560x3508 pixels at 24 bits/pixel
+scanimage: acquiring RGB frame
+scanimage: min/max graylevel value = 5/255
+scanimage: read 26941440 bytes in total
+Closing device
+Calling sane_exit
+scanimage: finished
+```
+To improve performance comment out everything except required drivers (`pixma` in this case) from `/usr/local/etc/sane.d/dll.conf`
+
+
+### Configuring network access to the scanner
+Note how we compiled the sane-backends with systemd support? Now this becomes handy. Read `man saned` and create the support files for systemd as described there:
+
+#### `/etc/systemd/system/saned.socket` 
+``` config
+[Unit]
+Description=saned incoming socket
+
+[Socket]
+ListenStream=6566
+Accept=yes
+MaxConnections=1
+
+[Install]
+WantedBy=sockets.target
+```
+
+#### `/etc/systemd/system/saned@.service` 
+``` config
+[Unit]
+Description=Scanner Service
+Requires=saned.socket
+
+[Service]
+ExecStart=/usr/local/sbin/saned
+User=saned
+Group=saned
+StandardInput=null
+StandardOutput=syslog
+StandardError=syslog
+Environment=SANE_CONFIG_DIR=/usr/local/etc/sane.d 
+#Environment=SANE_DEBUG_DLL=3 SANE_DEBUG_NET=3
+
+[Install]
+Also=saned.socket
+```
+If something goes not as planned feel free to adjust verbosity up to 128.
+
+Set owner to `root` and permissions to `644` on those files to avoid warning about execute flag.
+
+``` bash
+chown root:root /etc/systemd/system/saned@.service /etc/systemd/system/saned.socket
+chmod 644 /etc/systemd/system/saned@.service /etc/systemd/system/saned.socket
+```
+
+Also actually create the user `saned`:
+``` bash
+groupadd saned
+useradd saned -g saned
+```
+
+#### `/etc/udev/rules.d/65-sane-backends.rules`
+Allow user `saned` access to the device by brutally giving access to this device to everyone:
+ 
+``` config
+ATTRS{idVendor}=="04a9", ATTRS{idProduct}=="26a3", MODE="0666"
+```
+To figure out vendor id and usb id run `lsusb`. If you don't have `lsusb` &mdash; install `usbutils`. To figure out that it is in fact shipped with `usbutils` run `yum whatprovides lsusb`.
+
+>The proper way to achieve this perhaps would be to add a special group e.g `mfaccess`, add saned and cups users to it and assign permissions to devices that are matched with libsane to that group to avoid giving everyone write access &mdash; something like this:
+>
+>``` config
+>ENV{libsane_matched}=="yes", GROUP="mfaccess", MODE="0660"
+>```
+>However I have not done this yet.
+
+Useful commands for debugging udev configuration:
+- `udevadm trigger --action=add`  to trigger an action `add`
+- `udevadm control --reload-rules`  to reload rules
+
+#### `/usr/local/etc/sane.d/saned.conf`
+``` config
+10.0.17.0/24
+printers
+localhost
+```
+
+#### Start the services
+``` bash
+systemctl enable saned.socket
+systemctl start saned.socket
+```
+
+### Testing network access to the scanner
+On the client edit `/opt/local/etc/sane.d/net.conf` and add server address `10.0.17.242` or `printers`. 
+Then just test: 
+```` bash
+scanimage -L
+device 'net:10.0.17.242:pixma:04A926A3_SDF680284650B' is a CANON Canon imageCLASS MF4150 multi-function peripheral
+````
+
+
+## References and Credits
+- [Canon MF4150 Drivers](https://www.usa.canon.com/internet/portal/us/home/support/details/printers/support-laser-printers-imageclass/imageclass-mf4150)
+- [Linux UFR II/UFRII LT Printer Driver Manual](http://ug.oipsrv.net/USRMA-0586-zz-DR-enUS/contents/dlu-inst.html)
+- [CentOS download](https://www.centos.org/download/)
+- [AirPrint article in Linux Magazine](http://www.linux-magazine.com/Online/Features/AirPrint)
+- [airprint-generate](https://github.com/jpawlowski/airprint-generate)
+- [Installing RPM image with dependencies](https://stackoverflow.com/questions/13876875/how-to-make-rpm-auto-install-dependencies)
+- [Installing CUPS and AirPrint on CentOS7](https://gist.github.com/jpawlowski/cd2827d46dd0c10f58c3b299ccdf8dd0) &mdash; my starting point
+- [SANE &mdash; Scanner Access Now Easy](http://www.sane-project.org)
+- [SANE Backends](https://anonscm.debian.org/gitweb/?p=sane/sane-backends.git) and [PIXMA driver](https://www.mankier.com/5/sane-pixma)
+- [How to set up your scanner to work with Sane and PDF Studio under Fedora 27 Linux’s systemd](https://kbpdfstudio.qoppa.com/how-to-set-up-your-scanner-to-work-with-sane-and-pdf-studio-under-fedora-27-linuxs-systemd/)

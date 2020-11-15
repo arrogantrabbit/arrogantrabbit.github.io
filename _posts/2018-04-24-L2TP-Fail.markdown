@@ -1,0 +1,11 @@
+---
+layout: post
+title:  "Failure to negotiate when connecting to Synology L2TP server"
+date:   2018-04-24 00:00:00 -0700
+categories: [VPN]
+tags: VPN L2TP Synology 
+---
+
+Setting up L2TP VPN server on Synology DiskStation, forwarded ports `500,4500,1701` but the hanshake fails for obscure reason; something along the lines of "fatal payload-malformed notify message, phase 1 should be deleted". What do to? Check the PSK length. It shall not be longer than 64 characters. UI will accept longer string however doing so will result in failures setting up the tunnel.
+
+Yep. That was the whole post. We don't publish clickbait here on the Trinkets blog.   
