@@ -3,7 +3,7 @@ layout: post
 title:  "Duplicacy Web on Synology Diskstation without Docker"
 date:   2020-03-02 22:00:00 -0700
 categories: ["Backup"]
-tags: ["Backup", "Synology"]
+tags: ["Backup", "Synology", "Duplicacy"]
 excerpt: Duplicacy is a self-contained executable and as such it can be run natively on a Synology diskstation, without docker.
 ---
 
