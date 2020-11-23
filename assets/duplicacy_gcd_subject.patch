@@ -1,0 +1,14 @@
+diff --git a/src/duplicacy_gcdstorage.go b/src/duplicacy_gcdstorage.go
+index 85c4c93..25bd9b9 100644
+--- a/src/duplicacy_gcdstorage.go
++++ b/src/duplicacy_gcdstorage.go
+@@ -349,6 +349,9 @@ func CreateGCDStorage(tokenFile string, driveID string, storagePath string, thre
+ 		if err != nil {
+ 			return nil, err
+ 		}
++                if subject, ok := object["subject"]; ok {
++                        config.Subject = subject.(string)
++                }
+ 		tokenSource = config.TokenSource(ctx)
+ 	} else {
+ 		gcdConfig := &GCDConfig{}
