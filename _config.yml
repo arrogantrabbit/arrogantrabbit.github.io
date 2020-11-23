@@ -28,7 +28,8 @@ kramdown:
   input: GFM
   syntax_highlighter: rouge
   
-  
+timezone: America/Los_Angeles
+
 theme: minima
 
 
