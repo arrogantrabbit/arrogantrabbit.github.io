@@ -166,7 +166,9 @@ Lets configure duplicacy in the user's home folder. For convenience we'll store 
 	/Users/me will be backed up to gcd://duplicacy with id obsidian
 	```
 
-	Login to [https://drive.google.com](https://drive.google.com) and confirm that the duplicacy folder is present in the root of My Drive.
+	Login to [https://drive.google.com](https://drive.google.com) and confirm that the duplicacy folder is present in the root of My Drive if the `drive` or `drive.file` scope was selected. Otherwise click Gear - Settings - Manage Apps and confirm Duplicacy is in the list: 
+	
+    ![App Name]({{ "/assets/gcp-drive-app-in-the-list.png" | absolute_url }}) 
 
 3. Configure duplicacy to honor Time Machine exclusions: 
 ```
