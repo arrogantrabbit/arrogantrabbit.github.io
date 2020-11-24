@@ -68,9 +68,8 @@ Drawback 3 can be avoided by using `drive.appdata` instead of `drive` or `drive.
    - For placing the datastore to hidden app-data folder that only duplciacy can access, without giving it full access to entire drive use  `../auth/drive.appdata` scope. 
   Either click the checkbox next to the desired scope (`../auth/drive.appdata`) or paste the scope URL to "Manually add scopes" box. Then click `UPDATE`: 
 ![App Name]({{ "/assets/gcp-api-scopes-selected-appdata.png" | absolute_url }}) 
-13. The scope would be added to the list of Sensitive scopes. (The appdata scope would have been added to the less restrictive non-sensitive scopes). Then click `SAVE AND CONTINUE`:
+13. The scope would be added to the list of Non-Sensitive scope list. The `drive` scope would have been added to the more restrictive sensitive scopes. Then click `SAVE AND CONTINUE`:
 ![App Name]({{ "/assets/gcp-api-scopes-added-nonsensitive.png" | absolute_url }}) 
-
 14. Confirmation screen will be displayed in a little while. Go back to "API & Services", "Credentials", and click `+ CREATE CREDENTIALS`. In the popup menu select "Service Account":
 ![App Name]({{ "/assets/gcp-api-create-credentials-appdata.png" | absolute_url }}) 
 15. Fill in service account details and click `CREATE`: 
@@ -80,7 +79,7 @@ Drawback 3 can be avoided by using `drive.appdata` instead of `drive` or `drive.
 17. Back on the "Credentials" page click on the pencil next to the service account we just created:
 ![App Name]({{ "/assets/gcp-api-manage-service-account.png" | absolute_url }}) 
 18. Here we'll need to do a few things: 
-    1. Take a note of Unique ID. Save it somewhere, we'll need it later.
+    1. Make a note of Unique ID for later.
     2. Expand `SHOW DOMAIN DELEGATION` and tick the checkbox there. This will grant the service account access to all users data on the domain.
     3. Click `ADD KEY`, "Create New Key": 
 ![App Name]({{ "/assets/gcp-api-service-account-keys.png" | absolute_url }}) 
@@ -91,8 +90,8 @@ Drawback 3 can be avoided by using `drive.appdata` instead of `drive` or `drive.
 ### Granting service account access to domain
 Now, change of scenery. Go to [https://admin.google.com](https://admin.google.com), there
 
-1. Click `Security`, 
-2. Scroll all the way down, click `API Controls`
+1. Click `Security`. 
+2. Scroll all the way down, click `API Controls`.
 3. Scroll all the way down, click  `Manage Domain Wide Delegation`, `Add New` and input the following information:
     - UniqueID we saved in step 18 above.
     - Scope from step 12: `https://www.googleapis.com/auth/drive.appdata`
@@ -123,11 +122,10 @@ Open downloaded json file and add `"subject": "alex@arrogantrabbit.com"` to tell
 
 #### Patching in support for `subject` and `scope` fields unless already implemented
 
-Note: As of today duplicacy does not honor `subject` and `scope` field from the json file. More information, along with the link to the pull request can be found [here](https://forum.duplicacy.com/t/google-drive-drive-appdata-scope-service-account-impersonate/4462/5?u=saspus). Here is patch for convenience in the meantime:  [{{ "/assets/duplicacy_gcd_subject_scope.patch" | absolute_url }}]({{ "/assets/duplicacy_gcd_subject_scope.patch" | absolute_url }})
+As of today duplicacy does not honor `subject` and `scope` field from the json file. More information, along with the link to the pull request can be found [here](https://forum.duplicacy.com/t/google-drive-drive-appdata-scope-service-account-impersonate/4462/5?u=saspus). In the meantime this patch can be applied to the top of tree:  [{{ "/assets/duplicacy_gcd_subject_scope.patch" | absolute_url }}]({{ "/assets/duplicacy_gcd_subject_scope.patch" | absolute_url }})
  
-
 On a mac, the process is really simple: 
-1. Install go: `brew install go`
+1. Install go: `brew install go`.
 2. Fetch duplicacy and all dependencies: `go get github.com/gilbertchen/duplicacy/duplicacy`. This may take a while. 
 3. Patch: 
 	```bash
