@@ -95,13 +95,13 @@ Now, change of scenery. Go to [https://admin.google.com](https://admin.google.co
 2. Scroll all the way down, click `API Controls`
 3. Scroll all the way down, click  `Manage Domain Wide Delegation`, `Add New` and input the following information:
     - UniqueID we saved in step 18 above.
-    - Scope from step 14: `https://www.googleapis.com/auth/drive`
+    - Scope from step 12: `https://www.googleapis.com/auth/drive.appdata`
 ![App Name]({{ "/assets/gcp-admin-domain-wide-delegation-add-id.png" | absolute_url }}) 
 Then click `AUTHORIZE`. 
 
 ### Configuring duplicacy for impersonation
 
-Open downloaded json file and add `"subject": "alex@arrogantrabbit.com"` to tell duplicacy which account to impersonate; don't forget the `,` (edited to save space).:
+Open downloaded json file and add `"subject": "alex@arrogantrabbit.com"` to tell duplicacy which account to impersonate; don't forget the `,`, and the correct scope; same as above:
 
 ```json
 {
