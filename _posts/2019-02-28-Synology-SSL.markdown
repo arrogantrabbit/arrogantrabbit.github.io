@@ -28,7 +28,8 @@ Using LE requires one of the following to happen:
 * Hosting a webserver to the world to facilitate renewals: securing, monitoring and patching it is not something I'm looking forward to.
 * Using Synology DDNS which performs DNS based validation for LE: I'd like to use my own domain instead.
 * DNS-based validation: LE supports DNS validation for a number of providers that support API to manipulate TXT records. My DNS provider, Google Domains, is not one of them. At this time I'm not looking forward moving away from Google Domains for various reasons.
-* LetsEncrypt can only work for FQDN that LE can verify. It will not work for LAN ip address, or hostname, or local DNS name, making it a complete no-go.
+
+But more importantly, LetsEncrypt can only work for FQDN that LE can verify. It will not work for LAN ip address, or hostname, or local DNS name, making it a complete no-go.
 
 ## Configuration
 
