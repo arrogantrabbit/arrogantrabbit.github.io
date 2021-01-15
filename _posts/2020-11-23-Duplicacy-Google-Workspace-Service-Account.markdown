@@ -100,7 +100,7 @@ Then click `AUTHORIZE`.
 
 ### Configuring duplicacy for impersonation
 
-Open downloaded json file and add `"subject": "alex@arrogantrabbit.com"` to tell duplicacy which account to impersonate; don't forget the `,`, and the correct scope; same as above:
+Open downloaded json file and add `"subject": "chipmunk@arrogantrabbit.com"` to tell duplicacy which account to impersonate; don't forget the `,`, and the correct scope; same as above:
 
 ```json
 {
@@ -114,7 +114,7 @@ Open downloaded json file and add `"subject": "alex@arrogantrabbit.com"` to tell
   "token_uri": "https://oauth2.googleapis.com/token",
   "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
   "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/duplicacy%40duplicacy-app.iam.gserviceaccount.com",
-  "subject": "alex@arrogantrabbit.com",
+  "subject": "chipmunk@arrogantrabbit.com",
   "scope": "https://www.googleapis.com/auth/drive.appdata"
 }
 
