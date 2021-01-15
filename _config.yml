@@ -47,7 +47,7 @@ header_pages:
   - index.md 
 
 
-google_analytics: UA-116458412-1
+#google_analytics: UA-116458412-1
 
 disqus: 
     shortname: trinkets-odds-and-ends
