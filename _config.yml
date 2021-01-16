@@ -49,8 +49,8 @@ header_pages:
 
 #google_analytics: UA-116458412-1
 
-disqus: 
-    shortname: trinkets-odds-and-ends
+#disqus: 
+#    shortname: trinkets-odds-and-ends
 
 # jekyll-archives:  
 #   enabled:
