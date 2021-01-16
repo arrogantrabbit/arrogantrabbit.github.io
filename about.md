@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: page
 title: About
 permalink: /about/
 comments: false
@@ -20,3 +20,10 @@ Trinkets, odds[,](https://en.wikipedia.org/wiki/Serial_comma) and ends, and othe
 - [Solarized](http://ethanschoonover.com/solarized), eye friendly color palette for syntax highlihting
 - [Solarized adaptation for Jekyll and Pygments](https://gist.github.com/nicolashery/5765395)
 - [Data Tables](https://www.datatables.net), for interactive tables
+
+
+#### News
+
+|------|------|
+|Jan 15, 2021 | Removed Google Analytics, and replaced Disqus with instance of Discourse to minimize user tracking |
+
