@@ -25,7 +25,7 @@ Trinkets, odds[,](https://en.wikipedia.org/wiki/Serial_comma) and ends, and othe
 - [Discourse](https://www.discourse.org) for commenting
 - [Oracle Cloud](https://www.oracle.com/cloud/free/) to host the Discourse instance
 
-#### News
+#### Changes
 
 |------|------|
 |Jan 15, 2021 | Removed Google Analytics, and replaced Disqus with instance of Discourse to minimize user tracking |
