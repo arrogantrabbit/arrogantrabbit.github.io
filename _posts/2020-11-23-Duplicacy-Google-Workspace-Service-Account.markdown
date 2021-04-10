@@ -2,6 +2,7 @@
 layout: post
 title:  "Duplicacy backup to Google Drive with Service Account"
 date: 2020-11-23 10:00:00 -0700
+updated: 2021-04-09
 categories: ["Backup"]
 tags: ["Duplicacy", "Google Workspace"]
 excerpt: How to backup with Duplicacy to Google Workspace with Service Account 
@@ -120,22 +121,21 @@ Open downloaded json file and add `"subject": "chipmunk@arrogantrabbit.com"` to 
 
 ```
 
-#### Patching in support for `subject` and `scope` fields unless already implemented
+#### Building duplicacy from source to get support for `subject` and `scope` fields until released
 
 As of today duplicacy does not honor `subject` and `scope` field from the json file. More information, along with the link to the pull request can be found [here](https://forum.duplicacy.com/t/google-drive-drive-appdata-scope-service-account-impersonate/4462/5?u=saspus). In the meantime this patch can be applied to the top of tree:  [{{ "/assets/duplicacy_gcd_subject_scope.patch" | absolute_url }}]({{ "/assets/duplicacy_gcd_subject_scope.patch" | absolute_url }})
  
 On a mac, the process is really simple: 
 1. Install go: `brew install go`.
 2. Fetch duplicacy and all dependencies: `go get github.com/gilbertchen/duplicacy/duplicacy`. This may take a while. 
-3. Patch: 
-	```bash
-	cd ~/go/src/github.com/gilbertchen/duplicacy
-	curl {{ "/assets/duplicacy_gcd_subject_scope.patch" | absolute_url }} | patch -p1
-	```
-4. Build:
-	```
-	go install github.com/gilbertchen/duplicacy/duplicacy
-	```
+
+The [pull request 612](https://github.com/gilbertchen/duplicacy/pull/612) was merged on March 9. If building using older codebase -- apply the patch: 
+
+```bash
+cd ~/go/src/github.com/gilbertchen/duplicacy
+curl {{ "/assets/duplicacy_gcd_subject_scope.patch" | absolute_url }} | patch -p1
+go install github.com/gilbertchen/duplicacy/duplicacy
+```
 
 The executable will end up at `~/go/bin/duplicacy`. You may want to symlink it somewhere useful to avoid specifying the full path all over the place: 
 ```bash
@@ -204,3 +204,9 @@ Few things to note here:
 	-Google Drive File Stream/* 
     ```
     Note, `Google Drive File Stream` is as symlink to `/Volumes/Google Drive`; however since we have initialized repo in the user home and duplicacy follows first level symlinks this happens to work really well.
+    
+    ## History
+
+|------|------|
+|Nov 23, 2020 | initial publication|
+|Apr 9, 2021 | Modified the patching section to reflect that the PR has been merged to mainline|
