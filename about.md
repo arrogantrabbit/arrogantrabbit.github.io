@@ -7,10 +7,15 @@ comments: false
 
 Trinkets, odds[,](https://en.wikipedia.org/wiki/Serial_comma) and ends, and other artifacts discovered by Sir Arrogant Rabbit in his travels, presented in no particular order, with unknown purpose[,](https://en.wikipedia.org/wiki/Serial_comma) and questionable usefulness.
 
-#### Policies
+#### Privacy Policy
 
-<a href="/privacy">Privacy Policy</a><br>
-<a href="/cookies">Cookie Policy</a><br>
+This static site has no ads and/or trackers and we neither collect nor process any personal information. 
+
+We use the following third party services to facilitate web site operation and they may be collecting and/or processing that information according to their respective privacy policies:
+
+- [Github Pages](https://pages.github.com) to host the blog
+- [Cloudflare](https://www.cloudflare.com) to accelerate delivery
+- [Data Tables](https://www.datatables.net) for interactive tables in a couple of posts
 
 
 #### Acknowledgements
@@ -18,15 +23,5 @@ Trinkets, odds[,](https://en.wikipedia.org/wiki/Serial_comma) and ends, and othe
 - [Jekyll](https://jekyllrb.com), a static site generator
 - [Minima](https://github.com/jekyll/minima), minimalistic Jekyll theme
 - [Solarized](http://ethanschoonover.com/solarized), eye friendly color palette for syntax highlihting
-- [Solarized adaptation for Jekyll and Pygments](https://gist.github.com/nicolashery/5765395)
-- [Data Tables](https://www.datatables.net), for interactive tables
-- [Github Pages](https://pages.github.com) to host the blog
-- [Cloudflare](https://www.cloudflare.com) to accelerate delivery
-- [Discourse](https://www.discourse.org) for commenting
-- [Oracle Cloud](https://www.oracle.com/cloud/free/) to host the Discourse instance
-
-#### Changes
-
-|------|------|
-|Jan 15, 2021 | Removed Google Analytics, and replaced Disqus with instance of Discourse to minimize user tracking |
+- [Solarized adaptation for Jekyll and Pygments](https://gist.github.com/nicolashery/5765395) for syntax coloring
 
