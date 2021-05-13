@@ -2,4 +2,4 @@
 if  [[ -z "$1" ]] ; then 
 	bundle update
 fi
-bundle exec jekyll serve --drafts
+JEKYLL_ENV=production bundle exec jekyll serve --drafts

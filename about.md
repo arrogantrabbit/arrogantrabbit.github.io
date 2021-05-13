@@ -17,6 +17,7 @@ We use the following third party services to facilitate web site operation and t
 - [Cloudflare](https://www.cloudflare.com) to accelerate delivery
 - [Data Tables](https://www.datatables.net) for interactive tables in a couple of posts
 
+For commenting we use free tier of Disqus which is ad-supported. However, by default comments are not loaded. To see the discussion please click the link at the bottom of the blog posts. Note, third party trackers and tracking by Disqus will ensue. Clicking the link constitutes your acceptance of that third party content. 
 
 #### Acknowledgements
 
